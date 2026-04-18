@@ -7,29 +7,32 @@ import Items from "./Items";
 import { ItemType } from "@/lib/types/ItemType";
 import { formatCurrency } from "@/lib/FormatCurrency";
 import { motion } from "framer-motion";
+import { Customer, Product } from "@prisma/client";
+import { toast } from "react-toastify";
+import { CreateInvoiceAction } from "@/lib/Server/Create/CreateInvoice.action";
 // ==========================================================
-interface Customer {
-  id: string;
-  name: string;
-}
 function CreateInvoice({
   setShowCreateInvoice,
+  products,
+  customers,
 }: {
   setShowCreateInvoice: Dispatch<SetStateAction<boolean>>;
+  products: Product[];
+  customers: Customer[];
 }) {
-  const [discount, setDiscount] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [discount, setDiscount] = useState(0);
   const [tax, setTax] = useState(40);
   const [showCustomers, setShowCustomers] = useState(false);
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [items, setItems] = useState<ItemType[]>([
-    { product: { id: "", name: "" }, quantity: 1, price: "" },
+    {
+      id: crypto.randomUUID(),
+      product: { id: "", name: "" },
+      quantity: 1,
+      price: "",
+    },
   ]);
-  const customers = [
-    { id: "1", name: "Amr Khaled" },
-    { id: "2", name: "Mohammed Khaled" },
-    { id: "3", name: "Yaser Ahmed" },
-    { id: "4", name: "Taha Yaser" },
-  ];
   useEffect(() => {
     const handle = (e: MouseEvent) => {
       if (e.target instanceof Element) {
@@ -46,7 +49,38 @@ function CreateInvoice({
     (acc, item) => acc + Number(item.price) * item.quantity,
     0,
   );
-  const total_price = totalProductsPrice - Number(discount);
+  const total_price = totalProductsPrice - Number(discount) + tax;
+  console.log(items);
+  const handleCreateInvoice = async () => {
+    try {
+      setLoading(true);
+      const filteredItems = items.filter(
+        (p) => p.id && typeof Number(p.price) === "number" && p.quantity > 0,
+      );
+      if (filteredItems.length === 0)
+        return toast.error("لا يوجد منتجات صالحة", { className: "toast" });
+      const result = await CreateInvoiceAction(items, tax, discount, customer);
+      if (!result.success)
+        return toast.error(result.message, { className: "toast" });
+      setCustomer(null);
+      setItems([
+        {
+          id: crypto.randomUUID(),
+          product: { id: "", name: "" },
+          quantity: 1,
+          price: "",
+        },
+      ]);
+      toast.success(result.message, { className: "toast" });
+    } catch (error) {
+      console.log(error);
+      toast.error("حدث خطأ أثناء انشاء فاتورة جديدة حاول مرة أخرى", {
+        className: "toast",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div className="fixed h-screen inset-0 bg-black/25 backdrop-blur flex items-center justify-center">
       <motion.div
@@ -64,13 +98,18 @@ function CreateInvoice({
           showCustomers={showCustomers}
         />
         <h2>العناصر</h2>
-        <Items items={items} setItems={setItems} />
+        <Items items={items} setItems={setItems} products={products} />
         <button
           onClick={() => {
             if (items.length >= 5) return;
             setItems((prev: any) => [
               ...prev,
-              { product: { id: "", name: "" }, quantity: 1, price: "" },
+              {
+                id: crypto.randomUUID(),
+                product: { id: "", name: "" },
+                quantity: 1,
+                price: "",
+              },
             ]);
           }}
           className="flex items-center gap-2 text-sm cursor-pointer text-white font-bold rounded hover:scale-103 active:scale-95 transition-css bg-yellow-600 py-2 px-6 w-fit"
@@ -82,7 +121,7 @@ function CreateInvoice({
             <h3>الخصم</h3>
             <input
               value={discount}
-              onChange={(e) => setDiscount(e.target.value)}
+              onChange={(e) => setDiscount(Number(e.target.value))}
               type="number"
               className="border border-slate-300 outline-none rounded-md px-2 py-1.5"
             />
@@ -97,10 +136,15 @@ function CreateInvoice({
             />
           </div>
         </div>
-        <button className="text-white cursor-pointer bg-green-600 rounded-md py-3 px-6 hover:bg-green-500 mt-5 transition-css active:scale-95">
-          حفظ الفاتورة
+        <button
+          onClick={handleCreateInvoice}
+          disabled={loading}
+          className={`rounded-md py-3 px-6 mt-5 transition-css 
+            ${loading ? "text-gray-400 bg-gray-200" : "text-white bg-green-600 hover:bg-green-500 cursor-pointer active:scale-95 "}`}
+        >
+          {loading ? "جاري انشاء الفاتورة . . ." : " انشاء فاتورة"}
           <span className="mr-2 font-bold">
-            {formatCurrency(total_price > 0 ? total_price + tax : 0)}
+            {formatCurrency(total_price > 0 ? total_price : 0)}
           </span>
         </button>
       </motion.div>

@@ -2,7 +2,6 @@
 import AuthFormField from "@/components/AuthFormField/AuthFormField";
 import { motion } from "framer-motion";
 import { HiOutlineLockClosed } from "react-icons/hi2";
-import { RiUser6Line } from "react-icons/ri";
 import AuthHeader from "@/components/AuthHeader/AuthHeader";
 import AuthButtonSubmit from "@/components/AuthButtonSubmit/AuthButtonSubmit";
 import OrDivider from "@/components/OrDivider/OrDivider";
@@ -12,16 +11,19 @@ import { FormEvent, useState } from "react";
 import { LoginSchema } from "@/lib/Zod/Auth/LoginSchema";
 import { LoginAction } from "@/lib/Server/Auth/Login.action";
 import Blur from "@/components/Blur/Blur";
+import { MdLockOutline } from "react-icons/md";
 // =============================================================================================
 interface InputsErrors {
   email?: string;
   password?: string;
 }
-function LoginContent() {
+function LoginContent({ e }: { e: string | undefined }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [inputErrors, setInputErrors] = useState<InputsErrors>({});
-  const [error, setError] = useState("");
+  const [error, setError] = useState(
+    e ? "هذا الإيميل مسجل مسبقاً بكلمة مرور، يرجى الدخول يدوياً" : "",
+  );
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const [loadingAuthO, setLoadingAuthO] = useState(false);
@@ -76,11 +78,15 @@ function LoginContent() {
     >
       <AuthHeader icon={HiOutlineLockClosed} title="تسجيل الدخول إلى حسابك" />
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-        {error && <p className="text-white bg-red-400 p-1 font-semibold text-sm">{error}</p>}
+        {error && (
+          <p className="text-white bg-red-400 p-1 font-semibold text-sm">
+            {error}
+          </p>
+        )}
         <AuthFormField
           label="البريد الإلكتروني"
           id="email"
-          icon={RiUser6Line}
+          icon={MdOutlineMail}
           type="email"
           placeholder="example@gmail.com"
           onChange={setEmail}
@@ -91,7 +97,7 @@ function LoginContent() {
         <AuthFormField
           label="كلمة السر"
           id="password"
-          icon={MdOutlineMail}
+          icon={MdLockOutline}
           type="password"
           placeholder="********"
           onChange={setPassword}
@@ -108,6 +114,7 @@ function LoginContent() {
         />
         <OrDivider />
         <ButtonAuthWithGoogle
+          setError={setError}
           setLoadingAuthO={setLoadingAuthO}
           loadingAuthO={loadingAuthO}
           disabled={loading}

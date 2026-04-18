@@ -1,13 +1,10 @@
 "use client";
 
+import { Customer } from "@prisma/client";
 import { Dispatch, SetStateAction } from "react";
 import { IoIosArrowDown } from "react-icons/io";
-import { MdRadioButtonChecked } from "react-icons/md";
+import { FaCheck } from "react-icons/fa6";
 // ===========================================================================
-interface Customer {
-  id: string;
-  name: string;
-}
 function Customers({
   setShowCustomers,
   customer,
@@ -29,8 +26,12 @@ function Customers({
           onClick={() => setShowCustomers(true)}
           className="border button flex w-full items-center justify-between px-2 py-1.5 cursor-pointer rounded-lg border-slate-300 "
         >
-          <h2 className={`text-slate-400 text-sm font-semibold ${customer && "text-slate-600"}`}>
-            {customer ? `العميل : ${customer.name} ` : "لم يتم اختيار عميل"}
+          <h2
+            className={`text-slate-400 text-sm font-semibold ${customer && "text-slate-600"}`}
+          >
+            {customer
+              ? `العميل : ${customer.name.slice(0,1).toUpperCase() + customer.name.slice(1).toLowerCase()} `
+              : "لم يتم اختيار عميل"}
           </h2>
           <IoIosArrowDown className="text-slate-400" />
         </button>
@@ -43,9 +44,9 @@ function Customers({
                   setCustomer(c);
                   setShowCustomers(false);
                 }}
-                className={`hover:bg-[#287DF4] flex items-center gap-4 hover:text-white w-full text-start px-2 rounded ${customer?.id === c.id && "text-white bg-[#287DF4]"}`}
+                className={`hover:bg-[#287DF4] capitalize flex items-center gap-4 hover:text-white w-full text-start px-2 rounded ${customer?.id === c.id && "text-white bg-[#287DF4]"}`}
               >
-                {customer?.id === c.id && <MdRadioButtonChecked />}
+                {customer?.id === c.id && <FaCheck />}
                 {c.name}
               </button>
             ))}

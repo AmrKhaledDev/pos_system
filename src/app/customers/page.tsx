@@ -3,13 +3,11 @@ import SectionHeader from "@/components/SectionHeader/SectionHeader";
 import { TbUsersGroup } from "react-icons/tb";
 import { FaRegUser } from "react-icons/fa";
 import { MdOutlineMailOutline } from "react-icons/md";
+import { CustomersDB } from "@/lib/dbCached/CustomersDB";
+import { Customer } from "@prisma/client";
 // ====================================================
-function Customers() {
-  const customers = [
-    { id: "1", name: "Amr Khaled", email: "maro.vip53@gmail.com" },
-    { id: "2", name: "Mohammed Yaser", email: "mohammedyaser12@gmail.com" },
-    { id: "3", name: "Ahmed Moatz", email: "ahmedmoatz342@gmail.com" },
-  ];
+async function Customers() {
+  const customers = await CustomersDB();
   return (
     <main className="section-p">
       <div className="container-css section-space">
@@ -19,10 +17,10 @@ function Customers() {
         />
         <SearchBar placeholder="ابحث عن عميل" />
         <ul className="grid grid-cols-3 gap-5">
-          {customers.map((customer) => (
+          {customers.map((customer: Customer) => (
             <li
               key={customer.id}
-              className="rounded-md p-4 bg-white hover:scale-105 transition-css  ring ring-slate-200 space-y-3 shadow-md" 
+              className="rounded-md p-4 bg-white hover:scale-105 transition-css  ring ring-slate-200 space-y-3 shadow-md"
             >
               <div className="flex items-center gap-3">
                 <FaRegUser className="p-2 size-8 ring ring-yellow-100 bg-gray-50 rounded-md text-yellow-500" />

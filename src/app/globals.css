@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Cairo:wght@200..1000&display=swap");
 @import "tailwindcss";
 /* ==================== */
 @layer utilities {
@@ -13,7 +14,10 @@
   .section-icon {
     @apply p-2 rounded-md bg-yellow-50 text-yellow-500 size-12 shadow;
   }
-  .section-space{
-    @apply space-y-8
+  .section-space {
+    @apply space-y-8;
   }
+}
+.toast {
+  font-family: "Cairo", sans-serif;
 }

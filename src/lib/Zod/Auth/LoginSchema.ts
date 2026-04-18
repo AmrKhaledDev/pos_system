@@ -7,6 +7,6 @@ export const LoginSchema = z.object({
     .nonempty({ message: "البريد الالكتروني مطلوب" }),
   password: z
     .string()
-    .nonempty({ message: "كلمة السر مطلوبة" })
-    .min(8, { message: "كلمة السر يجب ألا تقل عن 8  حروف / أرقام" }),
+    .min(8, { message: "كلمة السر يجب ألا تقل عن 8  حروف / أرقام" })
+    .nonempty({ message: "كلمة السر مطلوبة" }),
 });

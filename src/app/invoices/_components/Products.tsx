@@ -1,27 +1,20 @@
 "use client";
 
 import { ItemType } from "@/lib/types/ItemType";
+import { Product } from "@prisma/client";
 import { Dispatch, SetStateAction } from "react";
 // ====================================================================================
 function Products({
   setItems,
   index,
   items,
+  products,
 }: {
   setItems: Dispatch<SetStateAction<ItemType[]>>;
   index: number;
   items: ItemType[];
+  products: Product[];
 }) {
-  const products = [
-    { id: "1", name: "Iphone 15 Pro", price: 52000 },
-    { id: "2", name: "Samsung S24 Ultra", price: 48000 },
-    { id: "3", name: "AirPods Pro", price: 12000 },
-    { id: "4", name: "Apple Watch Series 9", price: 18000 },
-    { id: "5", name: "Dell Mouse", price: 850 },
-    { id: "6", name: "Mechanical Keyboard", price: 2200 },
-    { id: "7", name: "USB-C Charger", price: 600 },
-    { id: "8", name: "Laptop Stand", price: 950 },
-  ];
   const filteredProducts = products.filter(
     (product) => !items.some((item) => item.product?.id === product.id),
   );
@@ -39,7 +32,7 @@ function Products({
                         id: product.id,
                         name: product.name,
                       },
-                      price: product.price.toString(),
+                      price: product.selling_price.toString(),
                     }
                   : item,
               ),

@@ -1,8 +1,10 @@
+import { User } from "@prisma/client";
 import { FiUser } from "react-icons/fi";
 import { MdOutlineDateRange } from "react-icons/md";
 import { RiKeyLine } from "react-icons/ri";
+import dayjs from "dayjs";
 // ==============================================
-function AccountDetailsCard() {
+function AccountDetailsCard({ user }: { user: User }) {
   return (
     <div className="bg-white p-5 rounded-md shadow w-200 flex flex-col gap-3">
       <h2 className="text-2xl text-yellow-600 font-semibold">تفاصيل الحساب</h2>
@@ -15,11 +17,18 @@ function AccountDetailsCard() {
       </p>
       <p className="flex items-center gap-1">
         <FiUser className="text-yellow-600 size-4.5" /> الدور:
-        <span className="text-green-500 font-bold">كاشير</span>
+        <span
+          className={` font-bold 
+          ${user.role === "مستخدم" && "text-indigo-500"}
+          ${user.role === "مسؤول" && "text-red-500"}
+          ${user.role === "كاشير" && "text-green-500"}`}
+        >
+          {user.role}
+        </span>
       </p>
       <p className="flex items-center gap-1">
         <MdOutlineDateRange className="text-yellow-600 size-4.5" /> تم انشاء
-        الحساب في: 1/12/2025
+        الحساب في: <span>{dayjs(user.createdAt).format("D/M/YYYY")}</span>
       </p>
     </div>
   );

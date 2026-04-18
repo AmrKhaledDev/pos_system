@@ -4,8 +4,15 @@ import { useState } from "react";
 import { MdAdd } from "react-icons/md";
 import { RiMoneyDollarBoxLine } from "react-icons/ri";
 import CreateInvoice from "./CreateInvoice";
+import { Customer, Product } from "@prisma/client";
 // ============================================================
-function InvoicesHead() {
+function InvoicesHead({
+  products,
+  customers,
+}: {
+  products: Product[];
+  customers: Customer[];
+}) {
   const [showCreateInvoice, setShowCreateInvoice] = useState(false);
   return (
     <>
@@ -22,7 +29,10 @@ function InvoicesHead() {
         </button>
       </div>
       {showCreateInvoice && (
-        <CreateInvoice setShowCreateInvoice={setShowCreateInvoice} />
+        <CreateInvoice customers={customers}
+          setShowCreateInvoice={setShowCreateInvoice}
+          products={products}
+        />
       )}
     </>
   );

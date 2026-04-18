@@ -25,7 +25,7 @@ export const sendVerificationToken = async (
       html: `
     <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
       <h2>مرحبًا 👋</h2>
-      <p>شكرًا لتسجيلك في <strong>POS System</strong>.</p>
+      <p>شكرًا لتسجيلك في متجرنا </p>
       <p>اضغط على الزر التالي لتأكيد بريدك الإلكتروني:</p>
       <a 
         href="${link}"

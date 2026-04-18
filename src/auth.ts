@@ -4,18 +4,22 @@ import { prisma } from "@/lib/prisma";
 import Credentials from "next-auth/providers/credentials";
 import { LoginSchema } from "./lib/Zod/Auth/LoginSchema";
 import bcrypt from "bcryptjs";
+import Google from "next-auth/providers/google";
 //  ===================================================================
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
+  secret: process.env.AUTH_SECRET,
+  session: { strategy: "jwt" },
   callbacks: {
     async jwt({ token, user }) {
-      token.sub = user.id;
+      if (user) {
+        token.sub = user.id;
+      }
       return token;
     },
     async session({ session, token }) {
-      if (token.sub) {
+      if (token.sub && session.user) {
         session.user.id = token.sub;
-        return session;
       }
       return session;
     },
@@ -44,5 +48,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
       },
     }),
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }),
   ],
+  pages: {
+    signIn: "/login",
+  },
 });

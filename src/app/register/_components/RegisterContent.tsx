@@ -11,6 +11,8 @@ import { RiUser6Line } from "react-icons/ri";
 import { FormEvent, useState } from "react";
 import { RegisterSchema } from "@/lib/Zod/Auth/RegisterSchema";
 import { RegisterAction } from "@/lib/Server/Auth/Register.action";
+import { MdLockOutline } from "react-icons/md";
+import Blur from "@/components/Blur/Blur";
 // =============================================================================================
 interface InputsErrors {
   name?: string;
@@ -26,6 +28,7 @@ function RegisterContent() {
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const [loadingAuthO, setLoadingAuthO] = useState(false);
+  console.log(name);
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
@@ -34,6 +37,7 @@ function RegisterContent() {
       setError("");
       setInputErrors({});
       const validation = RegisterSchema.safeParse({
+        name,
         email,
         password,
       });
@@ -61,6 +65,7 @@ function RegisterContent() {
         password,
       });
       if (!result.success) return setError(result.message);
+      setName("");
       setEmail("");
       setPassword("");
       setSuccess(result.message);
@@ -80,7 +85,7 @@ function RegisterContent() {
       className="bg-white p-7 h-fit rounded-xl shadow-2xl w-110 ring ring-slate-200 flex flex-col gap-7"
     >
       <AuthHeader icon={FaRegUser} title="أنشئ حسابك وابدأ الآن" />
-      <form action="" className="flex flex-col gap-3">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         {error && (
           <p className="text-white bg-red-400 p-1 font-semibold text-sm">
             {error}
@@ -100,7 +105,7 @@ function RegisterContent() {
         <AuthFormField
           label="البريد الإلكتروني"
           id="email"
-          icon={RiUser6Line}
+          icon={MdOutlineMail}
           type="email"
           placeholder="example@gmail.com"
           onChange={setEmail}
@@ -111,7 +116,7 @@ function RegisterContent() {
         <AuthFormField
           label="كلمة السر"
           id="password"
-          icon={MdOutlineMail}
+          icon={MdLockOutline}
           type="password"
           placeholder="********"
           onChange={setPassword}
@@ -133,6 +138,7 @@ function RegisterContent() {
           disabled={loading}
         />
       </form>
+      {(loading || loadingAuthO) && <Blur />}
     </motion.div>
   );
 }
